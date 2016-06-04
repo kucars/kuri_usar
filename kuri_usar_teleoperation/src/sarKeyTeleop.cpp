@@ -99,8 +99,8 @@ void sarKeyTeleop::keyLoop()
         case Arrow_R    : linear_x = 0.0 ; linear_y = -1.0; linear_z = 0.0; angular_z=0.0 ; break;	
         case KEY_t      : linear_x = 0.0 ; linear_y = 0.0; linear_z = 1.0; angular_z=0.0 ; break;
         case KEY_l      : linear_x = 0.0 ; linear_y = 0.0; linear_z = -1.0; angular_z=0.0 ; break;
-       	case KEY_u      : linear_x = 0.0 ; linear_y = 0.0; linear_z = 0.0; angular_z=3.14 ; break;
-        case KEY_y      : linear_x = 0.0 ; linear_y = 0.0; linear_z = 0.0; angular_z=-3.14 ; break;
+       	case KEY_u      : linear_x = 0.0 ; linear_y = 0.0; linear_z = 0.0; angular_z=1.57 ; break;
+        case KEY_y      : linear_x = 0.0 ; linear_y = 0.0; linear_z = 0.0; angular_z=-1.57 ; break;
        }
         vel_msg.twist.linear.x = linear_x*cos(yaw ) - linear_y * sin(yaw) ; 
         vel_msg.twist.linear.y = linear_x*sin (yaw) + linear_y * cos(yaw) ;
