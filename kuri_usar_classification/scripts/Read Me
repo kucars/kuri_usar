@@ -1,0 +1,17 @@
+The dataCollection.py is a python file that is used to construct a custom msg from kuri-usar-msgs and publish it. 
+rosbag record was used to record this msg to be used later create a dataSet.
+
+The image.py file read the bag file and extract the images with their corresponding label and save the images in the same folder. 
+The label is mainly attaching the letter "F" or "L" or "R" before the image id. 
+
+The 2017-07-11-08-48-18.bag is a bag file that recorded one custom topic from kuri-usar-msgs pkg. The msg contains Image with a label. 
+
+"F" = Forward 
+"R" = Right 
+"L" = Left 
+
+Copy and paste the images in the dataSet folder. 
+The Images are now in folder ~/catkin_ws/src/kuri-usar/kuri-usar-classification/dataSet3
+
+CNN.py is the deep learning mode where it load the images from the dataSet, create the model, train it, evaluate it and use images to be predicted. 
+The model loss and model accuracy plots are provided in resutls folder 
