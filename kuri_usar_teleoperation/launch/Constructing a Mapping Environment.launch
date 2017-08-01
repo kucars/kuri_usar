@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="paused" default="false"/>
+  <arg name="debug" default="false"/>
+  <arg name="gui" default="true" />
+  <arg name="headless" default="false"/>
+  <arg name="enable_logging" default="false"/>
+  <arg name="enable_ground_truth" default="true"/>
+  <arg name="ns" default="uav_1"/>
+  <arg name="log_file" default="$(arg ns)"/>
+  <arg name="gazebo_arg" default=""/>
+  <arg name="world" default="sar_world1.world"/>
+  
+   <include file="$(find kuri_usar_sim)/launch/world.launch" >
+    <arg name="paused" default="$(arg paused)"/>
+    <arg name="debug" default="$(arg debug)"/>
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="headless" default="$(arg headless)"/>
+  </include>
+  
+<!--
+<include file="$(find hector_nist_arena_worlds)/launch/start.launch" >
+    <arg name="world" default="$(arg world)"/>
+    <arg name="gui" value="$(arg gui)" />
+
+  </include>
+  -->
+  
+  <group ns="uav_1">
+    <include file="$(find rotors_gazebo)/launch/spawn_ardrone.launch">
+      <arg name="model" value="$(find rotors_description)/urdf/ardrone_kuri_usar_sensors.gazebo" />
+      <arg name="enable_logging" value="$(arg enable_logging)" />
+      <arg name="enable_ground_truth" value="$(arg enable_ground_truth)" />
+      <arg name="log_file" value="$(arg log_file)"/>
+      <arg name="x" value="-3.0"/>
+      <arg name="y" value="-2.0"/>
+      <arg name="Y" value="3.14"/> 
+      <arg name="name" value="uav_1"/>
+    </include>
+    <arg name="fcu_url" default="udp://localhost:14560@localhost:14565" />
+   
+    <include file="$(find mavros)/launch/px4.launch">
+      <arg name="fcu_url" value="$(arg fcu_url)" />
+    </include>    
+  </group>
+ 
+  <include file="$(find rotors_gazebo)/launch/ardrone.launch">
+    <arg name="ns" value="uav_1"/>
+  </include>
+  
+
+  <node name="slam_gmapping" pkg="gmapping" type="slam_gmapping">
+     <param name="scan_height" value="10"/> 
+     <param name="scan_time" value="0.033"/>
+     <param name="range_min" value="0.45"/>
+     <param name="range_max" value="10.0"/>
+     <param name="min_height" value=".10"/>
+     <param name="max_height" value="2.0"/>
+     <param name="output_frame_id" value="/base_link"/>
+     <remap from="/scan" to="/uav_1/scan"/> 
+     <param name="map_frame" value="map" />
+     <param name="_odom_frame" value="world" />
+     <param name="_base_frame" value="/base_link" />
+     <param name="_inverted_laser" value="false" />
+  </node> 
+
+<node pkg="tf" type="static_transform_publisher" name="map_to_world" args="0 0 0 0 0 0 map world 500" />
+<node pkg="tf" type="static_transform_publisher" name="base_to_base" args="0 0 0 0 0 0  /uav_1/ground_truth/uav_1/ground_truth/odometry_sensorgt_link /base_link 500" /> 
+<node pkg="tf" type="static_transform_publisher" name="base_to_depth" args="0.1 -0.022 -0.055 0 0.093 0 /base_link uav_1/depth_cam_depth_frame 500" />
+<node pkg="tf" type="static_transform_publisher" name="base_to_rgbd" args="0.1 -0.022 -0.055 0 0.093 0 /base_link uav_1/rgbd_cam_depth_optical_frame 500" />
+<node pkg="tf" type="static_transform_publisher" name="base_to_laser" args="0.0 0.0 0.085 0 0 0 /base_link uav_1/laser0_frame 500" /> 
+<node pkg="tf" type="static_transform_publisher" name="base_to_cam" args="0.0 0.0 -0.020 0 1.570796327 0 /base_link uav_1/downward_cam_optical_frame 500" /> 
+<node pkg="tf" type="static_transform_publisher" name="base_to_thermal" args="0 0 0.05 0 0 0 /base_link uav_1/thermal_cam_optical_frame 500" /> 
+
+<!-- for testing --> 
+<!--
+<node pkg="tf" type="static_transform_publisher" name="base_to_thermal" args="0 0 1 0 0 0  /uav_1/ground_truth/uav_1/ground_truth/odometry_sensorgt_link uav_1/foot_print_frame 500" /> 
+--> 
+<!-- Fake laser -->
+
+ <!-- <node pkg="nodelet" type="nodelet" name="laserscan_nodelet_manager" args="manager"/>
+  <node pkg="nodelet" type="nodelet" name="depthimage_to_laserscan"
+        args="load depthimage_to_laserscan/DepthImageToLaserScanNodelet laserscan_nodelet_manager">
+     <param name="scan_height" value="10"/> 
+     <param name="scan_time" value="0.033"/>
+     <param name="range_min" value="0.45"/>
+     <param name="range_max" value="10.0"/>
+     <param name="min_height" value=".10"/>
+     <param name="max_height" value="2.0"/>
+     <param name="output_frame_id" value="uav_1/uav_1_depth_optical_frame"/>
+     <remap from="image" to="/uav_1/uav_1/depth/image_raw"/>
+     <remap from="/scan" to="/sim_scan"/> 
+  </node>
+-->
+
+<!--<node pkg="tf" type="static_transform_publisher" name="link3_broadcaster" args="0 0 0 0 0 0 map world 500" />-->
+<!--
+rosrun gmapping slam_gmapping scan:=/uav_1/scan _odom_frame:=world _base_frame:=/uav_1/ground_truth/uav_1/ground_truth/odometry_sensorgt_link _inverted_laser:=false -->
+<node pkg="rviz" type="rviz" name="rviz" args="-d $(find kuri_usar_sim)/config/sim_rviz.rviz" />
+  
+</launch>

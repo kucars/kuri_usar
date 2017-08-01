@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="paused" default="false"/>
+  <arg name="debug" default="false"/>
+  <arg name="gui" default="true" />
+  <arg name="headless" default="false"/>
+  <arg name="enable_logging" default="false"/>
+  <arg name="enable_ground_truth" default="true"/>
+  <arg name="ns" default="uav_1"/>
+  <arg name="log_file" default="$(arg ns)"/>
+  <arg name="gazebo_arg" default=""/>
+  <arg name="world" default="sar_world1.world"/>
+  
+   <include file="$(find kuri_usar_sim)/launch/world.launch" >
+    <arg name="paused" default="$(arg paused)"/>
+    <arg name="debug" default="$(arg debug)"/>
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="headless" default="$(arg headless)"/>
+  </include>
+  
+<!--
+<include file="$(find hector_nist_arena_worlds)/launch/start.launch" >
+    <arg name="world" default="$(arg world)"/>
+    <arg name="gui" value="$(arg gui)" />
+
+  </include>
+  -->
+  
+  <group ns="uav_1">
+    <include file="$(find rotors_gazebo)/launch/spawn_ardrone.launch">
+      <arg name="model" value="$(find rotors_description)/urdf/ardrone_kuri_usar_sensors.gazebo" />
+      <arg name="enable_logging" value="$(arg enable_logging)" />
+      <arg name="enable_ground_truth" value="$(arg enable_ground_truth)" />
+      <arg name="log_file" value="$(arg log_file)"/>
+      <arg name="x" value="-3.0"/>
+      <arg name="y" value="-2.0"/>
+      <arg name="Y" value="3.14"/> 
+      <arg name="name" value="uav_1"/>
+    </include>
+    <arg name="fcu_url" default="udp://localhost:14560@localhost:14565" />
+   
+    <include file="$(find mavros)/launch/px4.launch">
+      <arg name="fcu_url" value="$(arg fcu_url)" />
+    </include>    
+  </group>
+ 
+  <include file="$(find rotors_gazebo)/launch/ardrone.launch">
+    <arg name="ns" value="uav_1"/>
+  </include>
+  
+<node pkg="tf" type="static_transform_publisher" name="map_to_world" args="0 0 0 0 0 0 map world 500" />
+<node pkg="tf" type="static_transform_publisher" name="base_to_base" args="0 0 0 0 0 0  /uav_1/ground_truth/uav_1/ground_truth/odometry_sensorgt_link /base_link 500" /> 
+<node pkg="tf" type="static_transform_publisher" name="base_to_depth" args="0.1 -0.022 -0.055 0 0.093 0 /base_link uav_1/depth_cam_depth_frame 500" />
+<node pkg="tf" type="static_transform_publisher" name="base_to_rgbd" args="0.1 -0.022 -0.055 0 0.093 0 /base_link uav_1/rgbd_cam_depth_optical_frame 500" />
+<node pkg="tf" type="static_transform_publisher" name="base_to_laser" args="0.0 0.0 0.085 0 0 0 /base_link uav_1/laser0_frame 500" /> 
+<node pkg="tf" type="static_transform_publisher" name="base_to_cam" args="0.0 0.0 -0.020 0 1.570796327 0 /base_link uav_1/downward_cam_optical_frame 500" /> 
+<node pkg="tf" type="static_transform_publisher" name="base_to_thermal" args="0 0 0.05 0 0 0 /base_link uav_1/thermal_cam_optical_frame 500" /> 
+
+
+ <node name="map_server" pkg="map_server" type="map_server" args=" $(find kuri_usar_sim)/maps/map_4.yaml" />
+ <!-- Load AMCL  -->
+ <include file="$(find kuri_usar_sim)/launch/amcl_uav.launch" />
+ <node pkg="rviz" type="rviz" name="rviz" args="-d $(find kuri_usar_sim)/config/sim_rviz.rviz" />
+  
+</launch>

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<launch>
+
+<!-- Fake laser -->
+
+  <node pkg="nodelet" type="nodelet" name="laserscan_nodelet_manager" args="manager"/>
+  <node pkg="nodelet" type="nodelet" name="depthimage_to_laserscan"
+        args="load depthimage_to_laserscan/DepthImageToLaserScanNodelet laserscan_nodelet_manager">
+     <param name="scan_height" value="10"/> 
+     <param name="scan_time" value="0.033"/>
+     <param name="range_min" value="0.45"/>
+     <param name="range_max" value="10.0"/>
+     <param name="min_height" value=".10"/>
+     <param name="max_height" value="2.0"/>
+     <param name="output_frame_id" value="uav_1/rgbd_cam_depth_frame"/><!-- the tf should be related to the depth camera frame  --> 
+     <remap from="image" to="/uav_1/rgbd_cam/depth/image_raw"/> <!-- This topic is not right it should be depth images  --> 
+     <remap from="/scan" to="/uav_1/scan"/> 
+  </node>
+
+</launch>

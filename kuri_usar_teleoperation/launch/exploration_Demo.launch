@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+
+ <!--- Run gmapping -->
+ <!-- using command line --> 
+
+  <!--- Run Move Base -->
+  <include file="$(find kuri_usar_sim)/launch/move_base.launch" />
+
+  <!-- Run Frontier Exploration -->
+  <include file="$(find kuri_usar_sim)/launch/exploration.launch" />
+
+</launch>
