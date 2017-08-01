@@ -9,7 +9,7 @@
   <arg name="ns" default="uav_1"/>
   <arg name="log_file" default="$(arg ns)"/>
   <arg name="gazebo_arg" default=""/>
-  <arg name="world_name" default="$(find kuri_usar_sim)/gazebo_models/world/dataCollectionWorld.world"/>
+  <arg name="world_name" default="$(find kuri_usar_sim)/gazebo_models/world/dataCollectionWorld2.world"/>
   
   <include file="$(find kuri_usar_sim)/launch/basic.launch" >
     <arg name="world_name" default="$(arg world_name)"/>
@@ -23,8 +23,8 @@
       <arg name="enable_logging" value="$(arg enable_logging)" />
       <arg name="enable_ground_truth" value="$(arg enable_ground_truth)" />
       <arg name="log_file" value="$(arg log_file)"/>
-      <arg name="x" value="-8.0"/>
-      <arg name="y" value="8.0"/>
+      <arg name="x" value="-38.33"/>
+      <arg name="y" value="-9.74"/>
       <arg name="Y" value="0"/> 
       <arg name="name" value="uav_1"/>
    
